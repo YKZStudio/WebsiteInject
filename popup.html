@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { width: 320px; padding: 14px; }
+    .head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .head .count { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .host {
+      color: var(--muted); font-size: 12px; margin: 2px 0 12px;
+      word-break: break-all; max-height: 32px; overflow: hidden;
+    }
+    .section-title { font-size: 12px; color: var(--muted); margin: 14px 0 6px; font-weight: 600; }
+    .list { display: flex; flex-direction: column; }
+    .item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 0; border-top: 1px solid var(--border);
+    }
+    .item .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .item.off .name { color: var(--muted); }
+    .empty { color: var(--muted); padding: 14px 0; font-size: 13px; }
+
+    .reload-tip {
+      display: none; align-items: center; gap: 8px;
+      background: var(--warn-bg); color: var(--warn-fg); border: 1px solid var(--warn-border);
+      border-radius: 8px; padding: 7px 10px; margin: 12px 0 0; font-size: 12px;
+    }
+    .reload-tip.show { display: flex; }
+    .reload-tip span { flex: 1; }
+    .reload-tip button { padding: 4px 10px; font-size: 12px; }
+
+    .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .actions button { width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <h2>WebsiteInject</h2>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="host" id="host">—</div>
+
+  <div id="banner" class="banner"></div>
+
+  <div class="section-title" id="section-title">本页匹配的脚本</div>
+  <div id="list" class="list"></div>
+
+  <div id="reload-tip" class="reload-tip">
+    <span>改动将在页面重新加载后生效</span>
+    <button id="btn-reload" class="primary">刷新本页</button>
+  </div>
+
+  <div class="actions">
+    <button id="btn-new">＋ 为本站点新建脚本</button>
+    <button id="btn-options" class="primary">管理所有脚本 →</button>
+  </div>
+
+  <script src="lib/store.js"></script>
+  <script src="lib/match.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

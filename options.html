@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebsiteInject · 脚本管理</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { max-width: 880px; margin: 0 auto; padding: 28px 24px 48px; }
+    .toolbar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+    .toolbar .spacer { flex: 1; }
+    .count { color: var(--muted); font-size: 13px; }
+    .list { display: flex; flex-direction: column; gap: 10px; }
+
+    /* 编辑面板 */
+    .editor {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 22px;
+      background: var(--card-2);
+      box-shadow: var(--shadow);
+    }
+    .editor.show { display: block; }
+    .editor h3 { margin: 0 0 6px; font-size: 15px; }
+    .editor label { display: block; font-weight: 600; margin: 14px 0 5px; }
+    #f-code { min-height: 230px; font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 13px; }
+    .row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .row > div { flex: 1; min-width: 170px; }
+    .inline { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+    .inline input { width: auto; }
+    .inline label { margin: 0; }
+    .editor-actions { margin-top: 18px; display: flex; gap: 8px; }
+  </style>
+</head>
+<body>
+  <h1>WebsiteInject</h1>
+  <p class="sub">导入脚本，对指定网站进行注入与修改。</p>
+
+  <div id="banner" class="banner"></div>
+
+  <div class="toolbar">
+    <button id="btn-new" class="primary">＋ 新建 / 粘贴脚本</button>
+    <button id="btn-import">📁 导入 .js 文件</button>
+    <button id="btn-export">⬇ 导出备份</button>
+    <button id="btn-restore">⬆ 导入备份</button>
+    <button id="btn-help" class="ghost">📖 说明</button>
+    <input id="file-input" type="file" accept=".js,.user.js,text/javascript" multiple hidden />
+    <input id="restore-input" type="file" accept=".json,application/json" hidden />
+    <span class="spacer"></span>
+    <span id="count" class="count"></span>
+  </div>
+
+  <!-- 编辑面板 -->
+  <div id="editor" class="editor">
+    <h3 id="editor-title">新建脚本</h3>
+    <label>名称</label>
+    <input id="f-name" type="text" placeholder="例如：去除某站广告" />
+
+    <label>匹配网站 <span class="hint">每行一个匹配网站，如 *://*.example.com/*</span></label>
+    <textarea id="f-matches" rows="3" placeholder="*://*.example.com/*"></textarea>
+
+    <div class="row">
+      <div>
+        <label>注入时机</label>
+        <select id="f-runat">
+          <option value="document_start">document_start（页面加载前）</option>
+          <option value="document_end">document_end（DOM 就绪）</option>
+          <option value="document_idle" selected>document_idle（默认，页面空闲）</option>
+        </select>
+      </div>
+      <div>
+        <label>注入世界</label>
+        <select id="f-world">
+          <option value="USER_SCRIPT" selected>USER_SCRIPT（隔离世界）</option>
+          <option value="MAIN">MAIN（页面主世界）</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="inline">
+      <input id="f-allframes" type="checkbox" />
+      <label for="f-allframes">注入到所有 iframe</label>
+    </div>
+
+    <label>脚本代码</label>
+    <textarea id="f-code" placeholder="console.log('hello from WebsiteInject');"></textarea>
+
+    <div class="editor-actions">
+      <button id="btn-save" class="primary">保存</button>
+      <button id="btn-cancel" class="ghost">取消</button>
+    </div>
+  </div>
+
+  <div id="list" class="list"></div>
+
+  <script src="lib/store.js"></script>
+  <script src="lib/metadata.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
