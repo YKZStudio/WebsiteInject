@@ -88,15 +88,40 @@ window.fetch = function (...args) {
 };</code></pre>
 
   <h2 id="meta">元数据头（可选）</h2>
-  <p>脚本开头可以写一段油猴风格的元数据头。导入 <code>.user.js</code> 文件时，会自动解析其中的 <code>@name</code> / <code>@match</code> / <code>@run-at</code> 来预填表单：</p>
+  <p>脚本开头可以写一段油猴风格的元数据头。导入 <code>.user.js</code> 文件时，会自动解析下列字段来预填表单：</p>
+  <table>
+    <tr><th>字段</th><th>含义</th></tr>
+    <tr><td><code>@name</code></td><td>脚本名称</td></tr>
+    <tr><td><code>@version</code></td><td>版本号，远程更新时比对</td></tr>
+    <tr><td><code>@match</code> / <code>@include</code></td><td>匹配网站</td></tr>
+    <tr><td><code>@exclude</code></td><td>排除网站（命中则不注入，优先于 @match）</td></tr>
+    <tr><td><code>@run-at</code></td><td>注入时机</td></tr>
+    <tr><td><code>@require</code></td><td>依赖脚本 URL，注入前先加载执行</td></tr>
+    <tr><td><code>@resource</code></td><td>命名资源「名称 URL」，供 <code>GM_getResourceText/URL</code> 取用</td></tr>
+    <tr><td><code>@updateURL</code> / <code>@downloadURL</code></td><td>远程更新的检查 / 下载地址</td></tr>
+  </table>
   <pre><code>// ==UserScript==
 // @name         去除某站广告
+// @version      1.0.0
 // @match        *://*.example.com/*
+// @exclude      *://*.example.com/admin/*
+// @require      https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js
+// @resource     logo https://example.com/logo.png
 // @run-at       document_idle
+// @updateURL    https://example.com/s.user.js
+// @downloadURL  https://example.com/s.user.js
 // ==/UserScript==
 
 /* 你的代码 */</code></pre>
-  <p class="note">注意：元数据头只用于<b>导入时预填</b>。脚本保存后，实际生效的是表单里的「匹配网站 / 时机 / 世界」设置，而非头里的注释。</p>
+  <p class="note">注意：元数据头只用于<b>导入时预填</b>。脚本保存后，实际生效的是编辑面板里的各项设置，而非头里的注释——这些都可以在面板里手动改。</p>
+
+  <h3>排除规则 / 依赖 / 远程更新</h3>
+  <ul>
+    <li><b>@exclude 排除规则</b>：在「排除网站」里每行填一个 match pattern，命中的页面不注入。</li>
+    <li><b>@require 依赖</b>：填脚本 URL，后台会在注入前抓取，并在你的代码之前执行（如引入 jQuery）。</li>
+    <li><b>@resource 资源</b>：填「名称 URL」，抓取后用 <code>GM_getResourceText(name)</code> / <code>GM_getResourceURL(name)</code> 同步取用。</li>
+    <li><b>远程更新</b>：填了「更新检查地址 / 下载地址」的脚本，列表卡片会出现 <b>↻</b> 按钮，点它按 <code>@version</code> 检查并更新。</li>
+  </ul>
 
   <h2 id="gm">GM API</h2>
   <p>脚本里可直接调用以下 API，无需 <code>@grant</code>。完整演示见示例脚本 <code>examples/gm-demo.user.js</code>。</p>
@@ -108,6 +133,7 @@ window.fetch = function (...args) {
     <tr><td><code>GM_setClipboard(text)</code></td><td>写入剪贴板。</td></tr>
     <tr><td><code>GM_openInTab(url, background?)</code></td><td>新标签页打开 URL。</td></tr>
     <tr><td><code>GM_notification(text, title?)</code></td><td>弹系统通知。</td></tr>
+    <tr><td><code>GM_getResourceText(name)</code> / <code>GM_getResourceURL(name)</code></td><td>读取 <code>@resource</code> 声明的资源：文本 / <code>data:</code> URL（同步，注册时已抓取烘焙）。</td></tr>
     <tr><td><code>GM_info</code> / <code>GM_log(...)</code></td><td>脚本元信息 / 控制台输出。</td></tr>
     <tr><td><code>GM.*</code></td><td>上述的 Promise 版本，如 <code>await GM.getValue(k)</code>、<code>GM.xmlHttpRequest(...)</code>。</td></tr>
     <tr><td><code>unsafeWindow</code></td><td>页面 window（仅 MAIN 世界为页面真实 window）。</td></tr>

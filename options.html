@@ -60,6 +60,9 @@
     <label>匹配网站 <span class="hint">每行一个匹配网站，如 *://*.example.com/*</span></label>
     <textarea id="f-matches" rows="3" placeholder="*://*.example.com/*"></textarea>
 
+    <label>排除网站 <span class="hint">@exclude，每行一个；命中则不注入</span></label>
+    <textarea id="f-excludes" rows="2" placeholder="*://*.example.com/admin/*"></textarea>
+
     <div class="row">
       <div>
         <label>注入时机</label>
@@ -77,6 +80,26 @@
         </select>
       </div>
     </div>
+
+    <label>@require 依赖 <span class="hint">每行一个脚本 URL，注入前先加载执行（如 jQuery CDN）</span></label>
+    <textarea id="f-requires" rows="2" placeholder="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></textarea>
+
+    <label>@resource 资源 <span class="hint">每行「名称 URL」，脚本里用 GM_getResourceText / GM_getResourceURL 取用</span></label>
+    <textarea id="f-resources" rows="2" placeholder="logo  https://example.com/logo.png"></textarea>
+
+    <div class="row">
+      <div>
+        <label>版本号 <span class="hint">@version</span></label>
+        <input id="f-version" type="text" placeholder="1.0.0" />
+      </div>
+      <div>
+        <label>更新检查地址 <span class="hint">@updateURL</span></label>
+        <input id="f-updateurl" type="text" placeholder="https://…/script.meta.js" />
+      </div>
+    </div>
+
+    <label>下载地址 <span class="hint">@downloadURL，远程更新时拉取的脚本地址</span></label>
+    <input id="f-downloadurl" type="text" placeholder="https://…/script.user.js" />
 
     <div class="inline">
       <input id="f-allframes" type="checkbox" />

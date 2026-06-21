@@ -38,7 +38,7 @@ async function init() {
   }
 
   const scripts = await Store.all();
-  const matched = scripts.filter((s) => Match.testAny(s.matches, url));
+  const matched = scripts.filter((s) => Match.hits(s, url));
   $("count").textContent = matched.length ? `命中 ${matched.length}` : "";
 
   const list = $("list");

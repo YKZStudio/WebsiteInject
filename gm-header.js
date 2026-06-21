@@ -14,6 +14,9 @@
   // 本地值缓存（注册时由后台烘焙的快照），让 GM_getValue/GM_setValue 同步可用
   const values = Object.assign({}, ctx.values || {});
 
+  // @resource 资源快照（注册时由后台抓取并烘焙），让 GM_getResourceText/URL 同步可用
+  const resources = ctx.resources || {};
+
   // ---- 与后台通信 ----
   const pending = new Map();
   let seq = 0;
@@ -99,6 +102,17 @@
     ta.remove();
   }
 
+  // ---- 资源（@resource）----
+  function GM_getResourceText(name) {
+    const r = resources[name];
+    return r ? r.text : undefined;
+  }
+  function GM_getResourceURL(name) {
+    const r = resources[name];
+    if (!r) return undefined;
+    return r.dataUrl || r.url; // data: URL 优先，便于作 <img src> / 样式背景
+  }
+
   // ---- 标签页 / 通知 ----
   function GM_openInTab(url, options) {
     // GM_openInTab(url, true) 表示后台打开；对象形式 { active: false } 同理
@@ -166,6 +180,8 @@
     setValue: (k, v) => bg("gm.setValue", { key: k, value: v }),
     deleteValue: (k) => bg("gm.deleteValue", { key: k }),
     listValues: () => bg("gm.getValues", {}).then((v) => Object.keys(v || {})),
+    getResourceText: (n) => Promise.resolve(GM_getResourceText(n)),
+    getResourceUrl: (n) => Promise.resolve(GM_getResourceURL(n)),
     addStyle: (css) => GM_addStyle(css),
     setClipboard: (t) => { GM_setClipboard(t); return Promise.resolve(); },
     openInTab: (url, o) => { GM_openInTab(url, o); return Promise.resolve(); },
@@ -179,6 +195,7 @@
     GM_info: ctx.info,
     GM_getValue, GM_setValue, GM_deleteValue, GM_listValues,
     GM_addStyle, GM_log, GM_setClipboard, GM_openInTab, GM_notification,
+    GM_getResourceText, GM_getResourceURL,
     GM_registerMenuCommand, GM_unregisterMenuCommand, GM_xmlhttpRequest,
     GM,
     // 隔离世界拿不到页面真实 window，这里退化为当前世界的全局对象
